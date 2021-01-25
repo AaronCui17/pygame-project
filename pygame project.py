@@ -96,7 +96,6 @@ def main():
     clock = pygame.time.Clock()
     spawn_first_pipe_counter = 0
     game_over = False
-    bruh = 0
 
     # Sprite group creation
     all_sprites_group = pygame.sprite.Group()
@@ -150,7 +149,7 @@ def main():
                     # Not game over now
                     game_over = False
 
-        bruh = bird.rect.y - SCREEN_HEIGHT + BIRD_HEIGHT
+
         # Spawn first pipe
         if spawn_first_pipe_counter == 3:
 
