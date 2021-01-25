@@ -133,6 +133,25 @@ def main():
                     spawn_first_pipe_counter += 1
 
 
+            # Reset game if game is over and player presses key to start again
+            if game_over == True:
+                if event.type == pygame.KEYDOWN:
+
+                    # Kill on screen pipes
+                    for pipe in pipes_group:
+                        pipe.kill()
+
+                    # Reset bird height and speed
+                    bird.rect.y = SCREEN_HEIGHT / 7 * 3 - BIRD_HEIGHT / 2
+                    bird.vel = -JUMP_SPEED
+
+                    # Prep to spawn first pipe
+                    spawn_first_pipe_counter = 0
+
+                    # Not game over now
+                    game_over = False
+
+
         # Spawn first pipe
         if spawn_first_pipe_counter == 3:
 
@@ -202,7 +221,7 @@ def main():
             if pipe.rect.right < 0:
                 pipe.kill()
 
-
+        # Game over if player hits pipe
         if pygame.sprite.spritecollide(bird, pipes_group, False):
             game_over = True
 
