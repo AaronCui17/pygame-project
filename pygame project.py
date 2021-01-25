@@ -96,6 +96,7 @@ def main():
     clock = pygame.time.Clock()
     spawn_first_pipe_counter = 0
     game_over = False
+    bruh = 0
 
     # Sprite group creation
     all_sprites_group = pygame.sprite.Group()
@@ -124,17 +125,15 @@ def main():
             if event.type == pygame.QUIT:
                 done = True
 
-            # Only if game is not over
+            # Make bird go up if key pressed
             if game_over == False:
-
-                # Make bird go up if key pressed
                 if event.type == pygame.KEYDOWN:
                     bird.vel = -JUMP_SPEED
                     spawn_first_pipe_counter += 1
 
 
-            # Reset game if game is over and player presses key to start again
-            if game_over == True:
+            # Reset game if game is over, bird has reached the ground, and player presses key to start again
+            if game_over == True and bird.rect.y >= SCREEN_HEIGHT-BIRD_HEIGHT:
                 if event.type == pygame.KEYDOWN:
 
                     # Kill on screen pipes
@@ -151,7 +150,7 @@ def main():
                     # Not game over now
                     game_over = False
 
-
+        bruh = bird.rect.y - SCREEN_HEIGHT + BIRD_HEIGHT
         # Spawn first pipe
         if spawn_first_pipe_counter == 3:
 
@@ -215,6 +214,9 @@ def main():
         # Keep bird in screen
         if bird.rect.y > SCREEN_HEIGHT - BIRD_HEIGHT:
             bird.rect.y = SCREEN_HEIGHT - BIRD_HEIGHT
+
+            # Stop bird from going off screen
+            bird.vel = 0
 
         # Kill off screen pipes
         for pipe in pipes_group:
