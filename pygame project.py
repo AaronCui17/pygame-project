@@ -22,6 +22,7 @@ X_DISTANCE_BETWEEN_PIPES = 300 # MUST BE MULTIPLE OF PIPE_SPEED
 
 TITLE = "Flappy Bird 2.0"
 
+
 # Make bird class
 class Bird(pygame.sprite.Sprite):
     def __init__(self):
@@ -43,6 +44,7 @@ class Bird(pygame.sprite.Sprite):
         # Increase the velocity to give bird acceleration
         self.vel += BIRD_ACCELERATION
 
+
 # Make top pipe class
 class Top_pipe(pygame.sprite.Sprite):
     def __init__(self):
@@ -60,6 +62,7 @@ class Top_pipe(pygame.sprite.Sprite):
     def update(self):
         # Make pipe move down at the velocity
         self.rect.x -= self.vel
+
 
 # Make bottom pipe class
 class Bottom_pipe(pygame.sprite.Sprite):
@@ -79,6 +82,7 @@ class Bottom_pipe(pygame.sprite.Sprite):
         # Make pipe move down at the velocity
         self.rect.x -= self.vel
 
+
 def main():
     pygame.init()
 
@@ -91,11 +95,14 @@ def main():
     done = False
     clock = pygame.time.Clock()
     spawn_first_pipe_counter = 0
+    game_over = False
 
     # Sprite group creation
     all_sprites_group = pygame.sprite.Group()
     pipes_group = pygame.sprite.Group()
     top_pipes_group = pygame.sprite.Group()
+    no_bird_group = pygame.sprite.Group()
+    bird_group = pygame.sprite.Group()
 
 
     # Bird creation
@@ -107,6 +114,7 @@ def main():
 
     # Add bird to group
     all_sprites_group.add(bird)
+    bird_group.add(bird)
 
 
     # ----- MAIN LOOP
@@ -116,10 +124,13 @@ def main():
             if event.type == pygame.QUIT:
                 done = True
 
-            # Make bird go up if key pressed
-            if event.type == pygame.KEYDOWN:
-                bird.vel = -JUMP_SPEED
-                spawn_first_pipe_counter += 1
+            # Only if game is not over
+            if game_over == False:
+
+                # Make bird go up if key pressed
+                if event.type == pygame.KEYDOWN:
+                    bird.vel = -JUMP_SPEED
+                    spawn_first_pipe_counter += 1
 
 
         # Spawn first pipe
@@ -145,8 +156,12 @@ def main():
             all_sprites_group.add(top_pipe)
             all_sprites_group.add(bottom_pipe)
 
+            no_bird_group.add(top_pipe)
+            no_bird_group.add(bottom_pipe)
+
             # Don't spawn more first pipes
             spawn_first_pipe_counter = 4
+
 
         # Spawn more pipes
         for top_pipe in top_pipes_group:
@@ -174,6 +189,9 @@ def main():
                 all_sprites_group.add(top_pipe)
                 all_sprites_group.add(bottom_pipe)
 
+                no_bird_group.add(top_pipe)
+                no_bird_group.add(bottom_pipe)
+
 
         # Keep bird in screen
         if bird.rect.y > SCREEN_HEIGHT - BIRD_HEIGHT:
@@ -185,7 +203,9 @@ def main():
                 pipe.kill()
 
 
-        pygame.sprite.spritecollide(bird, pipes_group, True)
+        if pygame.sprite.spritecollide(bird, pipes_group, False):
+            game_over = True
+
 
         # ----- DRAW
         screen.fill(SKY_BLUE)
@@ -195,8 +215,16 @@ def main():
         pygame.display.flip()
         clock.tick(60)
 
+
         # ----- LOGIC
-        all_sprites_group.update()
+
+        # Only move pipes if game not over
+        if game_over == False:
+            no_bird_group.update()
+
+        # Always move bird
+        bird_group.update()
+
 
     pygame.quit()
 
